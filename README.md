@@ -12,6 +12,17 @@ like svd, qr, eigen decomposition.
 run `cargo test` in root folder to run tests
 run `cargo test` in `src/zk` for zk specific tests
 
+### todo 
+- impl svd in halo2 without too much optimization
+    - how to do fp
+    - unconstrained function?
+- testing
+- e2e proof system, run some metrics
+- optimization
+- add qr and eigen decomposition
+- how to do fs with halo2 for randomness check protocol: https://hackmd.io/@axiom/SJw3p-qX3
+
+
 
 
 
