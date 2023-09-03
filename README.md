@@ -1,7 +1,7 @@
 # Numerical Linear Algebra in Halo2
 
-the goal is to implement proof system based on halo2 to verify linear algebra operations
-like svd, qr, eigen decomposition.
+the initial code is forked/copied from https://github.com/axiom-crypto/halo2-scaffold. Follow readme there to run proofs. The goal of the repo is to implement proof system based on halo2-lib to verify linear algebra operations
+like svd, qr, eigen decomposition, and build algorithms based on eigenvectors like eigentrust.
 
 ### setup
 
