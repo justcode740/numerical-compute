@@ -51,10 +51,11 @@ fn some_algorithm_in_zk<F: ScalarField>(
             let val = ctx.load_witness(val);
             let target = ctx.load_witness(target);
             let diff = fixed_point_chip.qsub(ctx, val, target);
+            let abs_diff = fixed_point_chip.qabs(ctx, diff);
             print!("diff val: {:?}", fixed_point_chip.dequantization(*diff.value()));
-            let diff_square = fixed_point_chip.qmul(ctx, diff, diff);
-            print!("diff sqaure val: {:?}", fixed_point_chip.dequantization(*diff_square.value()));
-            acc = fixed_point_chip.qadd(ctx, acc, diff_square);
+            // let diff_square = fixed_point_chip.qmul(ctx, diff, diff);
+            // print!("diff sqaure val: {:?}", fixed_point_chip.dequantization(*diff_square.value()));
+            acc = fixed_point_chip.qadd(ctx, acc, abs_diff);
             print!("acc val: {:?}", fixed_point_chip.dequantization(*acc.value()));
         }
     }
