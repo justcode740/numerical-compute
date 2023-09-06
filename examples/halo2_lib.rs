@@ -10,6 +10,7 @@ use halo2_base::{
 use halo2_scaffold::scaffold::cmd::Cli;
 use halo2_scaffold::scaffold::run;
 use serde::{Deserialize, Serialize};
+use halo2_scaffold::scaffold::{};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CircuitInput {

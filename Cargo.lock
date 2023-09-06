@@ -151,7 +151,7 @@ dependencies = [
  "ethers-providers",
  "ff 0.12.1",
  "futures",
- "halo2-base 0.3.0 (git+https://github.com/axiom-crypto/halo2-lib?branch=community-edition)",
+ "halo2-base",
  "itertools",
  "lazy_static",
  "log",
@@ -1314,32 +1314,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "halo2-base"
-version = "0.3.0"
-source = "git+https://github.com/axiom-crypto/halo2-lib#5de49cf94be77977c9aa5ef7dbad0ff9c2bfefe8"
-dependencies = [
- "ff 0.12.1",
- "halo2_proofs 0.2.0 (git+https://github.com/axiom-crypto/halo2.git?branch=axiom/dev)",
- "itertools",
- "log",
- "num-bigint",
- "num-integer",
- "num-traits",
- "rand_chacha",
- "rayon",
- "rustc-hash",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "halo2-ecc"
 version = "0.3.0"
 source = "git+https://github.com/axiom-crypto/halo2-lib?branch=community-edition#5de49cf94be77977c9aa5ef7dbad0ff9c2bfefe8"
 dependencies = [
  "ff 0.12.1",
  "group 0.12.1",
- "halo2-base 0.3.0 (git+https://github.com/axiom-crypto/halo2-lib?branch=community-edition)",
+ "halo2-base",
  "itertools",
  "num-bigint",
  "num-integer",
@@ -1363,7 +1344,7 @@ dependencies = [
  "clap-num",
  "env_logger",
  "ethers-core 2.0.6",
- "halo2-base 0.3.0 (git+https://github.com/axiom-crypto/halo2-lib?branch=community-edition)",
+ "halo2-base",
  "halo2-scaffold 0.2.0",
  "halo2_proofs 0.2.0 (git+https://github.com/privacy-scaling-explorations/halo2.git?tag=v2023_02_02)",
  "log",
@@ -1378,11 +1359,11 @@ dependencies = [
 [[package]]
 name = "halo2-scaffold"
 version = "0.2.0"
-source = "git+https://github.com/justcode740/ZKFixedPointChip#9a08791c70f645810d3504bf460328e1ffc16a79"
+source = "git+https://github.com/justcode740/ZKFixedPointChip#6c90d8415c1801905ab82034359875c314b6b7f1"
 dependencies = [
  "ark-std",
  "env_logger",
- "halo2-base 0.3.0 (git+https://github.com/axiom-crypto/halo2-lib)",
+ "halo2-base",
  "halo2_proofs 0.2.0 (git+https://github.com/privacy-scaling-explorations/halo2.git?tag=v2023_02_02)",
  "log",
  "num-bigint",
@@ -2993,7 +2974,7 @@ version = "0.1.1"
 source = "git+https://github.com/axiom-crypto/snark-verifier.git?branch=community-edition#cb4df8b1f113238650432f0e5995123537eb215f"
 dependencies = [
  "bytes",
- "halo2-base 0.3.0 (git+https://github.com/axiom-crypto/halo2-lib?branch=community-edition)",
+ "halo2-base",
  "halo2-ecc",
  "hex",
  "itertools",
@@ -3017,7 +2998,7 @@ source = "git+https://github.com/axiom-crypto/snark-verifier.git?branch=communit
 dependencies = [
  "bincode",
  "ethereum-types 0.14.1",
- "halo2-base 0.3.0 (git+https://github.com/axiom-crypto/halo2-lib?branch=community-edition)",
+ "halo2-base",
  "hex",
  "itertools",
  "lazy_static",
@@ -3816,7 +3797,7 @@ source = "git+https://github.com/axiom-crypto/halo2-lib?branch=community-edition
 dependencies = [
  "array-init",
  "ethers-core 0.17.0",
- "halo2-base 0.3.0 (git+https://github.com/axiom-crypto/halo2-lib?branch=community-edition)",
+ "halo2-base",
  "itertools",
  "lazy_static",
  "log",
