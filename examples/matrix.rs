@@ -37,10 +37,17 @@ fn some_algorithm_in_zk<F: ScalarField>(
     // fixed-point exp arithmetic
     let fixed_point_chip = FixedPointChip::<F, PRECISION_BITS>::default(lookup_bits);
 
+    let mut assgined_matrix: Vec<Vec<AssignedValue<F>>> = Vec::new();
+    for i in 0..m {
+        let row: Vec<AssignedValue<F>> = Vec::new(); 
+        for j in 0..n {
+            let val = ctx.load_witness(fixed_point_chip.quantization(input.matrix[i][j]));
+            make_public.push(val);
+        }
+        assgined_matrix.push(row); 
+    }
+
     let res = naive_matrix_mul(&naive_matrix_mul(&input.u, &input.s), &input.vt);
-    res.iter().for_each(|row| {
-        println!("res: {}", row.iter().map(|&e| e.to_string()).collect::<Vec<_>>().join(" "));
-    });
     
     let mut acc = ctx.load_zero();
     for i in 0..res.len() {
