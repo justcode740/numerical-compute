@@ -15,10 +15,10 @@ use zkfixedpointchip::gadget::fixed_point::{FixedPointChip, FixedPointInstructio
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CircuitInput {
-    pub u: Vec<Vec<f64>>, 
-    pub s: Vec<Vec<f64>>,
-    pub vt: Vec<Vec<f64>>,
-    pub matrix: Vec<Vec<f64>>,
+    pub u: Vec<Vec<f64>>, //m * m
+    pub s: Vec<Vec<f64>>, //m*n
+    pub vt: Vec<Vec<f64>>,//n*n
+    pub matrix: Vec<Vec<f64>>, // m*n
     pub err: f64 // err tolerance for verification
 }
 
@@ -38,28 +38,53 @@ fn some_algorithm_in_zk<F: ScalarField>(
     let fixed_point_chip = FixedPointChip::<F, PRECISION_BITS>::default(lookup_bits);
 
     let mut assgined_matrix: Vec<Vec<AssignedValue<F>>> = Vec::new();
+    let mut assgined_u: Vec<Vec<AssignedValue<F>>> = Vec::new();
+    let mut assgined_s: Vec<Vec<AssignedValue<F>>> = Vec::new();
+    let mut assgined_vt: Vec<Vec<AssignedValue<F>>> = Vec::new();
+
     for i in 0..m {
-        let row: Vec<AssignedValue<F>> = Vec::new(); 
+        let mut row1 = Vec::new(); 
+        let mut row2 = Vec::new();
         for j in 0..n {
             let val = ctx.load_witness(fixed_point_chip.quantization(input.matrix[i][j]));
+            let eigen = ctx.load_witness(fixed_point_chip.quantization(input.s[i][j]));
             make_public.push(val);
+            make_public.push(eigen);
+            row1.push(val);
+            row2.push(eigen);
         }
-        assgined_matrix.push(row); 
+        assgined_matrix.push(row1); 
+        assgined_s.push(row2);
     }
 
-    let res = naive_matrix_mul(&naive_matrix_mul(&input.u, &input.s), &input.vt);
-    
+    for i in 0..m {
+        let mut row: Vec<AssignedValue<F>> = Vec::new(); 
+        for j in 0..m {
+            let val = ctx.load_witness(fixed_point_chip.quantization(input.u[i][j]));
+            make_public.push(val);
+            row.push(val);
+        }
+        assgined_u.push(row); 
+    }
+
+    for i in 0..n {
+        let mut row: Vec<AssignedValue<F>> = Vec::new(); 
+        for j in 0..n {
+            let val = ctx.load_witness(fixed_point_chip.quantization(input.vt[i][j]));
+            make_public.push(val);
+            row.push(val);
+        }
+        assgined_vt.push(row); 
+    }
+
+    let us = naive_matrix_mul(ctx, & fixed_point_chip, &assgined_u, &assgined_s);
+    let usvt = naive_matrix_mul(ctx, & fixed_point_chip, &us, &assgined_vt);
+
     let mut acc = ctx.load_zero();
-    for i in 0..res.len() {
-        for j in 0..res[0].len() {
-            let val = fixed_point_chip.quantization(res[i][j]);
-            let target = fixed_point_chip.quantization(input.matrix[i][j]);
-            let val = ctx.load_witness(val);
-            let target = ctx.load_witness(target);
-            let diff = fixed_point_chip.qsub(ctx, val, target);
+    for i in 0..m {
+        for j in 0..n {
+            let diff = fixed_point_chip.qsub(ctx, usvt[i][j], assgined_matrix[i][j]);
             let abs_diff = fixed_point_chip.qabs(ctx, diff);
-            // let diff_square = fixed_point_chip.qmul(ctx, diff, diff);
-            // print!("diff sqaure val: {:?}", fixed_point_chip.dequantization(*diff_square.value()));
             acc = fixed_point_chip.qadd(ctx, acc, abs_diff);
         }
     }
@@ -71,7 +96,7 @@ fn some_algorithm_in_zk<F: ScalarField>(
    
 }
 
-fn naive_matrix_mul(u: &Vec<Vec<f64>>, s: &Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+fn naive_matrix_mul<F: ScalarField>(ctx: &mut Context<F>, fixed_point_chip: &FixedPointChip<F, 32> ,u: &Vec<Vec<AssignedValue<F>>>, s: &Vec<Vec<AssignedValue<F>>>) ->  Vec<Vec<AssignedValue<F>>> {
     let num_rows_u = u.len();
     let num_cols_u = u[0].len();
     let num_rows_s = s.len();
@@ -79,13 +104,16 @@ fn naive_matrix_mul(u: &Vec<Vec<f64>>, s: &Vec<Vec<f64>>) -> Vec<Vec<f64>> {
 
     assert_eq!(num_cols_u, num_rows_s, "Dimensions mismatch for multiplication.");
 
-    let mut result = vec![vec![0.0; num_cols_s]; num_rows_u];
+    let mut result = vec![vec![ctx.load_zero(); num_cols_s]; num_rows_u];
 
     for i in 0..num_rows_u {
         for j in 0..num_cols_s {
+            let mut acc = ctx.load_constant(F::from(0));
             for k in 0..num_cols_u {
-                result[i][j] += u[i][k] * s[k][j];
+                let mul_res = fixed_point_chip.qmul(ctx, u[i][k], s[k][j]);
+                acc = fixed_point_chip.qadd(ctx, mul_res, acc);
             }
+            result[i][j] = acc;
         }
     }
 
