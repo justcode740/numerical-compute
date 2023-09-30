@@ -177,6 +177,8 @@ mod eth {
                  keccak_rlcs: (FixedLenRLCs<Fr>, VarLenRLCs<Fr>)| {
                     let chip = EthChip::new(rlp, Some(keccak_rlcs));
                     let (ctx_gate, ctx_rlc) = builder.rlc_ctx_pair();
+                    
+                    // println!("gamma is {:?}", chip.rlp().rlc().gamma());
                     (f_phase1)(ctx_gate, ctx_rlc, &chip);
                     if ctx_gate.advice.is_empty() {
                         builder.gate_builder.threads[1].pop();
@@ -261,7 +263,10 @@ pub fn run_cli<P: PreCircuit>(precircuit: P, cli: Cli) {
     println!("Universal trusted setup (unsafe!) available at: params/kzg_bn254_{k}.srs");
     match cli.command {
         SnarkCmd::Mock => {
+            println!("reach1");
+
             let circuit = precircuit.create_circuit(CircuitBuilderStage::Mock, None, &params);
+            println!("reach2");
             MockProver::run(k, &circuit, circuit.instances()).unwrap().assert_satisfied();
         }
         SnarkCmd::Keygen => {
